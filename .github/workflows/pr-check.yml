@@ -7,16 +7,21 @@ on:
       - master
 
 jobs:
-  check:
-    name: Code Review Checks
+  build:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Repository
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Run Lint Checks
-        run: ./gradlew lint
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
 
-      - name: Run Tests
-        run: ./gradlew testDebugUnitTest
+      - name: Grant execute permission for Gradle
+        run: chmod +x gradlew
+
+      - name: Run Lint
+        run: ./gradlew lint

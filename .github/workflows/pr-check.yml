@@ -1,0 +1,22 @@
+name: PR Quality Check
+
+on:
+  pull_request:
+    branches:
+      - develop
+      - main
+
+jobs:
+  check:
+    name: Code Review Checks
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Run Lint Checks
+        run: ./gradlew lint
+
+      - name: Run Tests
+        run: ./gradlew testDebugUnitTest

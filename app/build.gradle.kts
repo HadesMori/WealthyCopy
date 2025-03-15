@@ -84,6 +84,9 @@ dependencies {
     implementation(libs.androidx.navigation.compose)
     implementation(libs.kotlinx.serialization.json)
 
+    testImplementation(libs.junit.jupiter)
+    testImplementation(libs.mockk)
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -103,10 +106,4 @@ dependencies {
 
 kapt{
     correctErrorTypes = true
-}
-
-buildscript {
-    dependencies {
-        classpath("com.google.android.libraries.mapsplatform.secrets-gradle-plugin:secrets-gradle-plugin:2.0.1")
-    }
 }

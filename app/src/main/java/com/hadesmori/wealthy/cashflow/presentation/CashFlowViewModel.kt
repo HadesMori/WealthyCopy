@@ -3,6 +3,7 @@ package com.hadesmori.wealthy.cashflow.presentation
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.hadesmori.wealthy.cashflow.data.repository.BasicStatistics
 import com.hadesmori.wealthy.cashflow.domain.model.Operation
 import com.hadesmori.wealthy.cashflow.domain.model.OperationType
 import com.hadesmori.wealthy.cashflow.domain.model.Profile
@@ -35,6 +36,8 @@ class CashFlowViewModel @Inject constructor(
     val profiles = MutableStateFlow(emptyList<Profile>())
     val profileCount = MutableStateFlow(0)
     val operations = MutableStateFlow<List<Operation>>(emptyList())
+
+    val statistics = MutableStateFlow(BasicStatistics(0, 0))
 
     init {
         getProfileCount()
@@ -80,12 +83,15 @@ class CashFlowViewModel @Inject constructor(
     fun addNewOperation(operation: Operation){
         viewModelScope.launch {
             addOperation(operation)
+            getOperations(operation.profileId!!)
+            loadStatistics(operation.profileId)
         }
     }
 
     fun getOperations(profileId: Long) : List<Operation>{
         viewModelScope.launch {
             operations.value = getOperationsFromProfile(profileId)
+            loadStatistics(profileId)
         }
         return operations.value
     }
@@ -106,6 +112,14 @@ class CashFlowViewModel @Inject constructor(
     fun removeOperationById(operationId: Long?) {
         viewModelScope.launch {
             deleteOperation(operationId)
+            getOperations(currentProfileId)
+        }
+    }
+
+    private fun loadStatistics(profileId: Long) {
+        viewModelScope.launch {
+            val stats = getOperationsFromProfile.getStatistics(profileId)
+            statistics.value = stats
         }
     }
 }

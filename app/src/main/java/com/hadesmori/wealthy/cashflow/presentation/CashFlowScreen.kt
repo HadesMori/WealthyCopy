@@ -68,11 +68,10 @@ fun CashFlowScreen(
                 .fillMaxSize()
                 .background(Primary),
             horizontalAlignment = Alignment.CenterHorizontally,
-        )
-        {
+        ) {
             CashFlowTopBar()
 
-            //Profile horizontal pager
+            // Profile horizontal pager
             val pagerState = rememberPagerState(pageCount = { viewModel.getProfileCount() })
             HorizontalPager(state = pagerState) { page ->
                 Profile(viewModel, profiles[page])
@@ -99,9 +98,10 @@ fun CashFlowTopBar() {
         horizontalArrangement = Arrangement.End,
         modifier = Modifier.fillMaxWidth()
     ) {
-        Button(onClick = {
-            /* TODO addNewProfile function */
-        },
+        Button(
+            onClick = {
+                /* TODO addNewProfile function */
+            },
             colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent)
         ) {
             Image(painter = painterResource(R.drawable.ic_add), contentDescription = "Add new profile")
@@ -116,6 +116,9 @@ fun updateUI(viewModel: CashFlowViewModel) {
 
 @Composable
 fun Profile(viewModel: CashFlowViewModel, profile: Profile) {
+    // Отримуємо статистику з ViewModel
+    val statistics = viewModel.statistics.collectAsState().value
+
     Column(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -126,7 +129,7 @@ fun Profile(viewModel: CashFlowViewModel, profile: Profile) {
             fontSize = 24.sp,
             fontWeight = FontWeight.Bold
         )
-        Spacer(modifier = Modifier.padding(16.dp))
+        Spacer(modifier = Modifier.padding(8.dp))
 
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -137,7 +140,23 @@ fun Profile(viewModel: CashFlowViewModel, profile: Profile) {
             Spacer(modifier = Modifier.padding(4.dp))
             Text(text = "$", fontSize = 48.sp, color = Color.White)
         }
-        Spacer(modifier = Modifier.padding(32.dp))
+
+        // Відображення статистики
+        Spacer(modifier = Modifier.padding(8.dp))
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceEvenly
+        ) {
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Text(text = "Income", color = Color.White, fontSize = 16.sp)
+                Text(text = "${statistics.totalIncome}$", color = Color.White, fontSize = 20.sp)
+            }
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Text(text = "Expense", color = Color.White, fontSize = 16.sp)
+                Text(text = "${statistics.totalExpense}$", color = Color.White, fontSize = 20.sp)
+            }
+        }
+        Spacer(modifier = Modifier.padding(16.dp))
     }
 }
 
@@ -163,8 +182,6 @@ fun OperationList(operations: List<Operation>, viewModel: CashFlowViewModel) {
     }
 }
 
-//operation: Operation
-//@Preview
 @Composable
 fun OperationItem(operation: Operation, viewModel: CashFlowViewModel) {
     val shouldShowDialog = remember { mutableStateOf(false) }
@@ -187,7 +204,7 @@ fun OperationItem(operation: Operation, viewModel: CashFlowViewModel) {
                 )
             }
     ) {
-        Row{
+        Row {
             Image(
                 painter = painterResource(id = R.drawable.ic_dollar),
                 contentDescription = "itemIcon",
@@ -198,25 +215,28 @@ fun OperationItem(operation: Operation, viewModel: CashFlowViewModel) {
             )
             Column(verticalArrangement = Arrangement.spacedBy(2.dp), horizontalAlignment = Alignment.Start) {
                 Text(text = operation.label, color = Color.White)
-                Text(text = if(operation.description.isNotEmpty()){
-                    operation.description
-                }
-                    else
-                {
-                    stringResource(R.string.empty_operation_description_text)
-                }
-                    , color = DarkerText)
+                Text(
+                    text = if (operation.description.isNotEmpty()) {
+                        operation.description
+                    } else {
+                        stringResource(R.string.empty_operation_description_text)
+                    },
+                    color = DarkerText
+                )
             }
         }
 
-        //TODO
-        val signedAmount = when(operation.type){
+        val signedAmount = when (operation.type) {
             OperationType.Income -> "+" + operation.amount.toString() + "$"
             OperationType.Expense -> "-" + operation.amount.toString() + "$"
             else -> operation.amount.toString() + "$"
         }
 
-        Column(verticalArrangement = Arrangement.spacedBy(2.dp), horizontalAlignment = Alignment.Start, modifier = Modifier.size(width = 80.dp, height = 48.dp)) {
+        Column(
+            verticalArrangement = Arrangement.spacedBy(2.dp),
+            horizontalAlignment = Alignment.Start,
+            modifier = Modifier.size(width = 80.dp, height = 48.dp)
+        ) {
             Text(text = signedAmount, color = Color.White)
             Text(text = operation.date.format(DateTimeFormatter.ofPattern("dd-MM")), color = DarkerText)
         }
@@ -236,8 +256,7 @@ fun AddNewOperationButton(
         contentPadding = PaddingValues(0.dp),
         shape = CircleShape,
         colors = ButtonDefaults.buttonColors(containerColor = Primary)
-    )
-    {
+    ) {
         Image(painterResource(R.drawable.ic_add), contentDescription = "Add operation")
     }
 }
